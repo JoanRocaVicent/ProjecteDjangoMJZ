@@ -1,0 +1,220 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recursos & Autors</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'FrontEnd/style.css' %}">
+
+
+</head>
+<body>
+<div id="app">
+  <header>
+    <a href="#/" class="header-logo">Gestió de <span>Recursos</span></a>
+    <nav id="nav">
+      <a href="#/recursos" data-route="recursos">Recursos</a>
+      <a href="#/autors"   data-route="autors">Autors</a>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <div class="loader-wrap"><div class="loader"></div></div>
+  </main>
+</div>
+
+<!-- ═══════════════════ TEMPLATES ════════════════════════════ -->
+
+<!-- HOME -->
+<template id="tpl-home">
+  <div class="hero">
+    <h1>Benvingut al<br>panell de <em>gestió</em></h1>
+    <p>Explora, crea i administra els recursos i autors de la plataforma des d'un sol lloc.</p>
+    <div class="home-cards">
+      <div class="home-card" onclick="router.go('#/recursos')">
+        <div class="home-card-icon">📚</div>
+        <h2>Recursos</h2>
+        <p>Consulta el catàleg de recursos disponibles, filtra per categoria i crea'n de nous.</p>
+        <div class="arrow">Veure recursos →</div>
+      </div>
+      <div class="home-card" onclick="router.go('#/autors')">
+        <div class="home-card-icon">✍️</div>
+        <h2>Autors</h2>
+        <p>Gestiona els autors registrats a la plataforma i afegeix-ne de nous.</p>
+        <div class="arrow">Veure autors →</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- RECURS LIST -->
+<template id="tpl-recursos">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Tots els <em>Recursos</em></h1>
+      <p class="page-subtitle" id="recursos-count"></p>
+    </div>
+    <button class="btn btn-primary" onclick="router.go('#/recursos/nou')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Nou recurs
+    </button>
+  </div>
+  <div id="recursos-list-content">
+    <div class="loader-wrap"><div class="loader"></div></div>
+  </div>
+</template>
+
+<!-- RECURS DETAIL -->
+<template id="tpl-recurs-detail">
+  <div class="detail-wrap">
+    <button class="back-btn" onclick="router.go('#/recursos')">
+      <svg viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Tornar als recursos
+    </button>
+    <div id="recurs-detail-content">
+      <div class="loader-wrap"><div class="loader"></div></div>
+    </div>
+  </div>
+</template>
+
+<!-- RECURS FORM -->
+<template id="tpl-recurs-form">
+  <div class="form-wrap">
+    <button class="back-btn" onclick="router.go('#/recursos')">
+      <svg viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Tornar als recursos
+    </button>
+    <div class="page-header" style="margin-bottom:1.5rem">
+      <h1 class="page-title">Nou <em>Recurs</em></h1>
+    </div>
+    <div class="form-card">
+      <p class="form-section-title">Informació del recurs</p>
+      <form id="recurs-form">
+        <div class="field">
+          <label for="r-titol">Títol <span style="color:var(--accent)">*</span></label>
+          <input id="r-titol" name="titol" class="field-input" type="text" placeholder="Títol del recurs" required />
+          <div class="field-error" id="err-titol"></div>
+        </div>
+        <div class="field">
+          <label for="r-descripcio">Descripció</label>
+          <textarea id="r-descripcio" name="descripcio" class="field-input" placeholder="Descripció opcional del recurs..."></textarea>
+        </div>
+        <div class="field">
+          <label for="r-categoria">Categoria <span style="color:var(--accent)">*</span></label>
+          <select id="r-categoria" name="categoria" class="field-input">
+            <option value="">— Selecciona una categoria —</option>
+            <option value="TEC">Tecnologia</option>
+            <option value="EDU">Educació</option>
+            <option value="SAL">Salut</option>
+            <option value="ENT">Entreteniment</option>
+            <option value="ALT">Altres</option>
+          </select>
+          <div class="field-error" id="err-categoria"></div>
+        </div>
+        <div class="field">
+          <label class="checkbox-row" style="cursor:pointer">
+            <input type="checkbox" name="is_activ" id="r-activ" checked />
+            <span>Recurs actiu</span>
+          </label>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-green" id="recurs-submit-btn">
+            Desar recurs
+          </button>
+          <button type="button" class="btn btn-ghost" onclick="router.go('#/recursos')">Cancel·lar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
+<!-- AUTOR LIST -->
+<template id="tpl-autors">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Tots els <em>Autors</em></h1>
+      <p class="page-subtitle" id="autors-count"></p>
+    </div>
+    <button class="btn btn-primary" onclick="router.go('#/autors/nou')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Nou autor
+    </button>
+  </div>
+  <div id="autors-list-content">
+    <div class="loader-wrap"><div class="loader"></div></div>
+  </div>
+</template>
+
+<!-- AUTOR DETAIL -->
+<template id="tpl-autor-detail">
+  <div class="detail-wrap">
+    <button class="back-btn" onclick="router.go('#/autors')">
+      <svg viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Tornar als autors
+    </button>
+    <div id="autor-detail-content">
+      <div class="loader-wrap"><div class="loader"></div></div>
+    </div>
+  </div>
+</template>
+
+<!-- AUTOR FORM -->
+<template id="tpl-autor-form">
+  <div class="form-wrap">
+    <button class="back-btn" onclick="router.go('#/autors')">
+      <svg viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Tornar als autors
+    </button>
+    <div class="page-header" style="margin-bottom:1.5rem">
+      <h1 class="page-title">Nou <em>Autor</em></h1>
+    </div>
+    <div class="form-card">
+      <p class="form-section-title">Informació de l'autor</p>
+      <form id="autor-form">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 1.25rem">
+          <div class="field">
+            <label for="a-nom">Nom <span style="color:var(--accent)">*</span></label>
+            <input id="a-nom" name="nom" class="field-input" type="text" placeholder="p.ex. Marta" required />
+            <div class="field-error" id="err-nom"></div>
+          </div>
+          <div class="field">
+            <label for="a-cognoms">Cognoms <span style="color:var(--accent)">*</span></label>
+            <input id="a-cognoms" name="cognoms" class="field-input" type="text" placeholder="p.ex. Puigdomènech" required />
+            <div class="field-error" id="err-cognoms"></div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="a-email">Correu electrònic <span style="color:var(--accent)">*</span></label>
+          <input id="a-email" name="email" class="field-input" type="email" placeholder="autora@exemple.cat" required />
+          <small>Ha de ser únic a la plataforma.</small>
+          <div class="field-error" id="err-email"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 1.25rem">
+          <div class="field">
+            <label for="a-data">Data de naixement</label>
+            <input id="a-data" name="data_naixement" class="field-input" type="date" />
+          </div>
+          <div class="field">
+            <label for="a-carrec">Càrrec</label>
+            <input id="a-carrec" name="càrrec" class="field-input" type="text" placeholder="p.ex. Investigadora" />
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-green" id="autor-submit-btn">
+            Desar autor
+          </button>
+          <button type="button" class="btn btn-ghost" onclick="router.go('#/autors')">Cancel·lar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
+<!-- ═══════════════════ SCRIPTS ═══════════════════════════════ -->
+<script src="{% static 'FrontEnd/script.js' %}"></script>
+</body>
+</html>

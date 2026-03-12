@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recursos & Autors</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Tokens ─────────────────────────────────────────────── */
+    :root {
+      --bg:        #F5F0E8;
+      --bg-card:   #FDFAF4;
+      --ink:       #1A1510;
+      --ink-dim:   #6B5F52;
+      --ink-faint: #B5A898;
+      --accent:    #C84B2F;
+      --accent-2:  #3D6B4F;
+      --line:      #DDD4C4;
+      --active-bg: #EEF5F1;
+      --tag-tec:   #2B4B7E; --tag-tec-bg: #E6EBF4;
+      --tag-edu:   #3D6B4F; --tag-edu-bg: #E6F0EA;
+      --tag-sal:   #7E3D3D; --tag-sal-bg: #F0E6E6;
+      --tag-ent:   #7E5E2B; --tag-ent-bg: #F0EAE0;
+      --tag-alt:   #5B5B5B; --tag-alt-bg: #EDEDED;
+      --r:         6px;
+      --r-lg:      12px;
+      --shadow:    0 2px 12px rgba(26,21,16,.08);
+      --shadow-lg: 0 8px 32px rgba(26,21,16,.12);
+    }
+
+    /* ── Reset ──────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    input, textarea, select { font-family: inherit; font-size: inherit; }
+
+    /* ── Noise overlay ──────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 200px;
+    }
+
+    /* ── Layout ─────────────────────────────────────────────── */
+    #app { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* ── Header ─────────────────────────────────────────────── */
+    header {
+      background: var(--ink);
+      color: var(--bg);
+      padding: 0 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      gap: 2rem;
+    }
+    .header-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.35rem;
+      letter-spacing: -.01em;
+      color: var(--bg);
+      white-space: nowrap;
+    }
+    .header-logo span { color: var(--accent); }
+    nav { display: flex; gap: .25rem; }
+    nav a {
+      padding: .45rem .9rem;
+      border-radius: var(--r);
+      font-size: .85rem;
+      font-weight: 500;
+      color: var(--ink-faint);
+      transition: background .15s, color .15s;
+    }
+    nav a:hover { background: rgba(255,255,255,.07); color: var(--bg); }
+    nav a.active { background: rgba(255,255,255,.12); color: var(--bg); }
+
+    /* ── Main container ─────────────────────────────────────── */
+    main { flex: 1; padding: 2.5rem; max-width: 1100px; width: 100%; margin: 0 auto; }
+
+    /* ── Page title bar ─────────────────────────────────────── */
+    .page-header {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 2rem; gap: 1rem; flex-wrap: wrap;
+    }
+    .page-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+      line-height: 1.1;
+      letter-spacing: -.02em;
+    }
+    .page-title em { font-style: italic; color: var(--accent); }
+    .page-subtitle { font-size: .85rem; color: var(--ink-dim); margin-top: .2rem; }
+
+    /* ── Buttons ─────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: .45rem;
+      padding: .55rem 1.2rem;
+      border-radius: var(--r);
+      font-size: .875rem;
+      font-weight: 500;
+      transition: all .15s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #A83B22; }
+    .btn-secondary { background: var(--ink); color: var(--bg); }
+    .btn-secondary:hover { background: #333; }
+    .btn-ghost { border: 1.5px solid var(--line); color: var(--ink-dim); }
+    .btn-ghost:hover { border-color: var(--ink-dim); color: var(--ink); background: var(--bg-card); }
+    .btn-green { background: var(--accent-2); color: #fff; }
+    .btn-green:hover { background: #2D5039; }
+    .btn-danger { background: #fff0ee; color: var(--accent); border: 1.5px solid #f5c5bc; }
+    .btn-danger:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    /* ── Delete button on cards ──────────────────────────────── */
+    .card-delete-btn {
+      flex-shrink: 0; width: 30px; height: 30px;
+      border-radius: var(--r); border: 1.5px solid var(--line);
+      background: var(--bg); color: var(--ink-faint);
+      display: flex; align-items: center; justify-content: center;
+      transition: all .15s; cursor: pointer;
+    }
+    .card-delete-btn:hover { background: #fff0ee; border-color: #f5c5bc; color: var(--accent); }
+    .card-delete-btn svg { width: 13px; height: 13px; pointer-events: none; }
+
+    /* ── Confirmation modal ──────────────────────────────────── */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(26,21,16,.45);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem;
+      animation: fadeIn .15s ease both;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 2rem;
+      max-width: 400px; width: 100%;
+      box-shadow: var(--shadow-lg);
+      animation: modalUp .2s ease both;
+    }
+    @keyframes modalUp {
+      from { opacity: 0; transform: translateY(16px) scale(.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .modal-icon { font-size: 2rem; margin-bottom: .75rem; }
+    .modal h3 { font-family: 'DM Serif Display', serif; font-size: 1.25rem; margin-bottom: .5rem; }
+    .modal p  { font-size: .875rem; color: var(--ink-dim); line-height: 1.55; }
+    .modal-actions { display: flex; gap: .75rem; margin-top: 1.75rem; justify-content: flex-end; }
+
+    /* ── Cards grid ─────────────────────────────────────────── */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 1.5rem;
+      display: flex; flex-direction: column; gap: .75rem;
+      box-shadow: var(--shadow);
+      transition: transform .2s, box-shadow .2s;
+      cursor: pointer;
+      animation: fadeUp .35s ease both;
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: .5rem; }
+    .card-title { font-family: 'DM Serif Display', serif; font-size: 1.1rem; line-height: 1.3; }
+    .card-desc { font-size: .85rem; color: var(--ink-dim); line-height: 1.6;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-meta { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; margin-top: auto; }
+    .card-date { font-family: 'DM Mono', monospace; font-size: .72rem; color: var(--ink-faint); }
+
+    /* ── Badge / tag ─────────────────────────────────────────── */
+    .tag {
+      display: inline-flex; align-items: center;
+      padding: .2rem .6rem;
+      border-radius: 999px;
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+    }
+    .tag-TEC { background: var(--tag-tec-bg); color: var(--tag-tec); }
+    .tag-EDU { background: var(--tag-edu-bg); color: var(--tag-edu); }
+    .tag-SAL { background: var(--tag-sal-bg); color: var(--tag-sal); }
+    .tag-ENT { background: var(--tag-ent-bg); color: var(--tag-ent); }
+    .tag-ALT { background: var(--tag-alt-bg); color: var(--tag-alt); }
+
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+    }
+    .status-dot.activ { background: #3D9962; }
+    .status-dot.inactiv { background: var(--ink-faint); }
+    .status-label { font-size: .72rem; color: var(--ink-dim); }
+
+    /* ── Autor card (horizontal layout) ─────────────────────── */
+    .autor-card {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 1.25rem 1.5rem;
+      display: flex; align-items: center; gap: 1.25rem;
+      box-shadow: var(--shadow);
+      transition: transform .2s, box-shadow .2s;
+      cursor: pointer;
+      animation: fadeUp .35s ease both;
+    }
+    .autor-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+
+    .avatar {
+      width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
+      background: var(--ink);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.15rem;
+      color: var(--bg);
+      letter-spacing: -.02em;
+    }
+    .autor-info { flex: 1; min-width: 0; }
+    .autor-name { font-family: 'DM Serif Display', serif; font-size: 1.05rem; }
+    .autor-sub { font-size: .8rem; color: var(--ink-dim); margin-top: .1rem; }
+    .autor-email { font-family: 'DM Mono', monospace; font-size: .75rem; color: var(--ink-faint); margin-top: .2rem;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* ── Detail view ─────────────────────────────────────────── */
+    .detail-wrap { max-width: 720px; animation: fadeUp .3s ease both; }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: .35rem;
+      font-size: .85rem; color: var(--ink-dim); margin-bottom: 1.75rem;
+      padding: .4rem .8rem;
+      border-radius: var(--r);
+      border: 1.5px solid var(--line);
+      background: var(--bg-card);
+      transition: all .15s;
+    }
+    .back-btn:hover { color: var(--ink); border-color: var(--ink-dim); }
+    .back-btn svg { width: 14px; height: 14px; }
+
+    .detail-card {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 2.5rem;
+      box-shadow: var(--shadow);
+    }
+    .detail-eyebrow {
+      font-family: 'DM Mono', monospace; font-size: .72rem;
+      text-transform: uppercase; letter-spacing: .1em;
+      color: var(--ink-faint); margin-bottom: .75rem;
+    }
+    .detail-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem; line-height: 1.15; letter-spacing: -.02em;
+      margin-bottom: 1.25rem;
+    }
+    .detail-tags { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
+    .divider { height: 1px; background: var(--line); margin: 1.75rem 0; }
+    .detail-body { font-size: .95rem; line-height: 1.75; color: var(--ink-dim); }
+    .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 2rem; margin-top: 1.75rem; }
+    .meta-item label {
+      font-family: 'DM Mono', monospace; font-size: .7rem;
+      text-transform: uppercase; letter-spacing: .08em;
+      color: var(--ink-faint); display: block; margin-bottom: .2rem;
+    }
+    .meta-item span { font-size: .9rem; color: var(--ink); }
+
+    /* ── Form ────────────────────────────────────────────────── */
+    .form-wrap { max-width: 620px; animation: fadeUp .3s ease both; }
+    .form-card {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 2.5rem;
+      box-shadow: var(--shadow);
+    }
+    .form-section-title {
+      font-family: 'DM Mono', monospace; font-size: .72rem;
+      text-transform: uppercase; letter-spacing: .1em;
+      color: var(--ink-faint); margin-bottom: 1.5rem;
+    }
+    .field { display: flex; flex-direction: column; gap: .4rem; margin-bottom: 1.25rem; }
+    .field label { font-size: .83rem; font-weight: 500; color: var(--ink); }
+    .field small { font-size: .75rem; color: var(--ink-faint); }
+    .field-input {
+      padding: .65rem .9rem;
+      border: 1.5px solid var(--line);
+      border-radius: var(--r);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: .9rem;
+      transition: border-color .15s, box-shadow .15s;
+      outline: none;
+      width: 100%;
+    }
+    .field-input:focus {
+      border-color: var(--ink);
+      box-shadow: 0 0 0 3px rgba(26,21,16,.07);
+    }
+    .field-input.error { border-color: var(--accent); }
+    textarea.field-input { resize: vertical; min-height: 100px; }
+    .field-error { font-size: .75rem; color: var(--accent); }
+
+    .checkbox-row {
+      display: flex; align-items: center; gap: .65rem;
+      padding: .75rem .9rem;
+      border: 1.5px solid var(--line);
+      border-radius: var(--r);
+      background: var(--bg);
+      cursor: pointer;
+      transition: border-color .15s;
+    }
+    .checkbox-row:hover { border-color: var(--ink-dim); }
+    .checkbox-row input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--accent-2); cursor: pointer; }
+    .checkbox-row span { font-size: .9rem; color: var(--ink); }
+
+    .form-actions { display: flex; gap: .75rem; margin-top: 2rem; }
+
+    /* ── Success toast ───────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
+      background: var(--ink); color: var(--bg);
+      padding: .9rem 1.4rem;
+      border-radius: var(--r-lg);
+      font-size: .875rem;
+      box-shadow: var(--shadow-lg);
+      display: flex; align-items: center; gap: .6rem;
+      animation: toastIn .3s ease both;
+    }
+    .toast.success .toast-dot { background: #3D9962; }
+    .toast.error   .toast-dot { background: var(--accent); }
+    .toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Loader ──────────────────────────────────────────────── */
+    .loader-wrap { display: flex; align-items: center; justify-content: center; padding: 5rem; }
+    .loader {
+      width: 36px; height: 36px;
+      border: 2.5px solid var(--line);
+      border-top-color: var(--ink);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Empty state ─────────────────────────────────────────── */
+    .empty {
+      text-align: center; padding: 4rem 2rem;
+      color: var(--ink-dim);
+    }
+    .empty-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .empty h3 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; margin-bottom: .4rem; }
+    .empty p { font-size: .875rem; }
+
+    /* ── Home hero ───────────────────────────────────────────── */
+    .hero {
+      padding: 3.5rem 0 2.5rem;
+      animation: fadeUp .4s ease both;
+    }
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 3.2rem; line-height: 1.05; letter-spacing: -.03em;
+      margin-bottom: 1rem;
+    }
+    .hero h1 em { font-style: italic; color: var(--accent); }
+    .hero p { font-size: 1rem; color: var(--ink-dim); max-width: 520px; line-height: 1.65; }
+    .home-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2.5rem; }
+    .home-card {
+      background: var(--bg-card); border: 1px solid var(--line);
+      border-radius: var(--r-lg); padding: 2rem;
+      box-shadow: var(--shadow); cursor: pointer;
+      transition: all .2s;
+      animation: fadeUp .4s ease both;
+    }
+    .home-card:nth-child(2) { animation-delay: .07s; }
+    .home-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--ink-faint); }
+    .home-card-icon { font-size: 2rem; margin-bottom: 1rem; }
+    .home-card h2 { font-family: 'DM Serif Display', serif; font-size: 1.4rem; margin-bottom: .4rem; }
+    .home-card p { font-size: .85rem; color: var(--ink-dim); line-height: 1.55; }
+    .home-card .arrow { margin-top: 1.5rem; font-size: .85rem; color: var(--accent); font-weight: 500; }
+
+    /* ── Responsive ──────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      header { padding: 0 1.25rem; }
+      main { padding: 1.5rem 1.25rem; }
+      .home-cards { grid-template-columns: 1fr; }
+      .meta-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 2.2rem; }
+      .detail-card, .form-card { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <a href="#/" class="header-logo">Gestió de <span>Recursos</span></a>
+    <nav id="nav">
+      <a href="#/recursos" data-route="recursos">Recursos</a>
+      <a href="#/autors"   data-route="autors">Autors</a>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <div class="loader-wrap"><div class="loader"></div></div>
+  </main>
+</div>
+
+<!-- ═══════════════════ TEMPLATES ════════════════════════════ -->
+
+<!-- HOME -->
+<template id="tpl-home">
+  <div class="hero">
+    <h1>Benvingut al<br>panell de <em>gestió</em></h1>
+    <p>Explora, crea i administra els recursos i autors de la plataforma des d'un sol lloc.</p>
+    <div class="home-cards">
+      <div class="home-card" onclick="router.go('#/recursos')">
+        <div class="home-card-icon">📚</div>
+        <h2>Recursos</h2>
+        <p>Consulta el catàleg de recursos disponibles, filtra per categoria i crea'n de nous.</p>
+        <div class="arrow">Veure recursos →</div>
+      </div>
+      <div class="home-card" onclick="router.go('#/autors')">
+        <div class="home-card-icon">✍️</div>
+        <h2>Autors</h2>
+        <p>Gestiona els autors registrats a la plataforma i afegeix-ne de nous.</p>
+        <div class="arrow">Veure autors →</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- RECURS LIST -->
+<template id="tpl-recursos">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Tots els <em>Recursos</em></h1>
+      <p class="page-subtitle" id="recursos-count"></p>
+    </div>
+    <button class="btn btn-primary" onclick="router.go('#/recursos/nou')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Nou recurs
+    </button>
+  </div>
+  <div id="recursos-list-content">
+    <div class="loader-wrap"><div class="loader"></div></div>
+  </div>
+</template>
+
+<!-- RECURS DETAIL -->
+<template id="tpl-recurs-detail">
+  <div class="detail-wrap">
+    <button class="back-btn" onclick="router.go('#/recursos')">
+      <svg viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Tornar als recursos
+    </button>
+    <div id="recurs-detail-content">
+      <div class="loader-wrap"><div class="loader"></div></div>
+    </div>
+  </div>
+</template>
+
+<!-- RECURS FORM -->
+<template id="tpl-recurs-form">
+  <div class="form-wrap">
+    <button class="back-btn" onclick="router.go('#/recursos')">
+      <svg viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Tornar als recursos
+    </button>
+    <div class="page-header" style="margin-bottom:1.5rem">
+      <h1 class="page-title">Nou <em>Recurs</em></h1>
+    </div>
+    <div class="form-card">
+      <p class="form-section-title">Informació del recurs</p>
+      <form id="recurs-form">
+        <div class="field">
+          <label for="r-titol">Títol <span style="color:var(--accent)">*</span></label>
+          <input id="r-titol" name="titol" class="field-input" type="text" placeholder="Títol del recurs" required />
+          <div class="field-error" id="err-titol"></div>
+        </div>
+        <div class="field">
+          <label for="r-descripcio">Descripció</label>
+          <textarea id="r-descripcio" name="descripcio" class="field-input" placeholder="Descripció opcional del recurs..."></textarea>
+        </div>
+        <div class="field">
+          <label for="r-categoria">Categoria <span style="color:var(--accent)">*</span></label>
+          <select id="r-categoria" name="categoria" class="field-input">
+            <option value="">— Selecciona una categoria —</option>
+            <option value="TEC">Tecnologia</option>
+            <option value="EDU">Educació</option>
+            <option value="SAL">Salut</option>
+            <option value="ENT">Entreteniment</option>
+            <option value="ALT">Altres</option>
+          </select>
+          <div class="field-error" id="err-categoria"></div>
+        </div>
+        <div class="field">
+          <label class="checkbox-row" style="cursor:pointer">
+            <input type="checkbox" name="is_activ" id="r-activ" checked />
+            <span>Recurs actiu</span>
+          </label>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-green" id="recurs-submit-btn">
+            Desar recurs
+          </button>
+          <button type="button" class="btn btn-ghost" onclick="router.go('#/recursos')">Cancel·lar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
+<!-- AUTOR LIST -->
+<template id="tpl-autors">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Tots els <em>Autors</em></h1>
+      <p class="page-subtitle" id="autors-count"></p>
+    </div>
+    <button class="btn btn-primary" onclick="router.go('#/autors/nou')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Nou autor
+    </button>
+  </div>
+  <div id="autors-list-content">
+    <div class="loader-wrap"><div class="loader"></div></div>
+  </div>
+</template>
+
+<!-- AUTOR DETAIL -->
+<template id="tpl-autor-detail">
+  <div class="detail-wrap">
+    <button class="back-btn" onclick="router.go('#/autors')">
+      <svg viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Tornar als autors
+    </button>
+    <div id="autor-detail-content">
+      <div class="loader-wrap"><div class="loader"></div></div>
+    </div>
+  </div>
+</template>
+
+<!-- AUTOR FORM -->
+<template id="tpl-autor-form">
+  <div class="form-wrap">
+    <button class="back-btn" onclick="router.go('#/autors')">
+      <svg viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Tornar als autors
+    </button>
+    <div class="page-header" style="margin-bottom:1.5rem">
+      <h1 class="page-title">Nou <em>Autor</em></h1>
+    </div>
+    <div class="form-card">
+      <p class="form-section-title">Informació de l'autor</p>
+      <form id="autor-form">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 1.25rem">
+          <div class="field">
+            <label for="a-nom">Nom <span style="color:var(--accent)">*</span></label>
+            <input id="a-nom" name="nom" class="field-input" type="text" placeholder="p.ex. Marta" required />
+            <div class="field-error" id="err-nom"></div>
+          </div>
+          <div class="field">
+            <label for="a-cognoms">Cognoms <span style="color:var(--accent)">*</span></label>
+            <input id="a-cognoms" name="cognoms" class="field-input" type="text" placeholder="p.ex. Puigdomènech" required />
+            <div class="field-error" id="err-cognoms"></div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="a-email">Correu electrònic <span style="color:var(--accent)">*</span></label>
+          <input id="a-email" name="email" class="field-input" type="email" placeholder="autora@exemple.cat" required />
+          <small>Ha de ser únic a la plataforma.</small>
+          <div class="field-error" id="err-email"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 1.25rem">
+          <div class="field">
+            <label for="a-data">Data de naixement</label>
+            <input id="a-data" name="data_naixement" class="field-input" type="date" />
+          </div>
+          <div class="field">
+            <label for="a-carrec">Càrrec</label>
+            <input id="a-carrec" name="càrrec" class="field-input" type="text" placeholder="p.ex. Investigadora" />
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-green" id="autor-submit-btn">
+            Desar autor
+          </button>
+          <button type="button" class="btn btn-ghost" onclick="router.go('#/autors')">Cancel·lar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
+<!-- ═══════════════════ SCRIPTS ═══════════════════════════════ -->
+<script>
+/**
+ * MOCK API — Temporary fake REST API for development
+ * Replace calls to `MockAPI.*` with real fetch() calls to your Django endpoints.
+ *
+ * Simulated endpoints:
+ *   GET    /api/recursos/          → MockAPI.getRecursos()
+ *   GET    /api/recursos/:id/      → MockAPI.getRecurs(id)
+ *   POST   /api/recursos/          → MockAPI.createRecurs(data)
+ *   GET    /api/autors/            → MockAPI.getAutors()
+ *   GET    /api/autors/:id/        → MockAPI.getAutor(id)
+ *   POST   /api/autors/            → MockAPI.createAutor(data)
+ */
+const MockAPI = (() => {
+  let _recursos = [
+    { id: 1, titol: "Introducció a la Intel·ligència Artificial", descripcio: "Una guia completa per entendre els fonaments de la IA, incloent aprenentatge automàtic, xarxes neuronals i aplicacions pràctiques en l'educació i la indústria.", categoria: "TEC", data_publicacio: "2024-03-15T09:00:00Z", is_activ: true },
+    { id: 2, titol: "Metodologies d'Aprenentatge Actiu", descripcio: "Recull de tècniques pedagògiques per fomentar la participació activa de l'alumnat a l'aula, amb exemples pràctics i avaluació de resultats.", categoria: "EDU", data_publicacio: "2024-01-20T10:30:00Z", is_activ: true },
+    { id: 3, titol: "Benestar Mental en l'Entorn Acadèmic", descripcio: "Estratègies i recursos per promoure la salut mental dels estudiants i docents, amb enfocament en la gestió de l'estrès i la resiliència.", categoria: "SAL", data_publicacio: "2023-11-05T14:00:00Z", is_activ: true },
+    { id: 4, titol: "Cinema Documental Europeu Contemporani", descripcio: "Anàlisi de les tendències actuals en el documental europeu, amb fitxes de les obres més destacades dels últims cinc anys.", categoria: "ENT", data_publicacio: "2024-02-28T16:45:00Z", is_activ: false },
+    { id: 5, titol: "Accés Obert i Publicació Científica", descripcio: "Tot el que necessites saber sobre les polítiques d'accés obert, repositoris institucionals i com publicar en revistes d'impacte.", categoria: "ALT", data_publicacio: "2024-04-01T08:00:00Z", is_activ: true },
+  ];
+  let _autors = [
+    { id: 1, nom: "Marta",  cognoms: "Puigdomènech Roca",   email: "m.puigdomenech@universitat.cat", data_naixement: "1982-07-14", càrrec: "Professora Titular" },
+    { id: 2, nom: "Jordi",  cognoms: "Esquerra Viladomat",  email: "j.esquerra@recerca.cat",         data_naixement: "1975-02-28", càrrec: "Investigador Principal" },
+    { id: 3, nom: "Núria",  cognoms: "Fontanals Bosch",     email: "n.fontanals@educacio.org",       data_naixement: "1990-11-03", càrrec: "Coordinadora de Projectes" },
+    { id: 4, nom: "Pau",    cognoms: "Castells Montserrat", email: "p.castells@tech.cat",            data_naixement: "1988-05-19", càrrec: "Enginyer de Recerca" },
+  ];
+  let _nextRecursId = 6;
+  let _nextAutorId  = 5;
+  const delay     = (ms = 300) => new Promise((r) => setTimeout(r, ms));
+  const deepClone = (obj) => JSON.parse(JSON.stringify(obj));
+  return {
+    async getRecursos() { await delay(); return { ok: true, data: deepClone(_recursos) }; },
+    async getRecurs(id) { await delay(); const item = _recursos.find((r) => r.id === Number(id)); if (!item) return { ok: false, error: "Recurs no trobat" }; return { ok: true, data: deepClone(item) }; },
+    async createRecurs(data) {
+      await delay(500);
+      const errors = {};
+      if (!data.titol?.trim())  errors.titol     = "El títol és obligatori.";
+      if (!data.categoria)      errors.categoria = "La categoria és obligatoria.";
+      if (Object.keys(errors).length) return { ok: false, errors };
+      const newItem = { id: _nextRecursId++, titol: data.titol.trim(), descripcio: data.descripcio?.trim() || null, categoria: data.categoria, data_publicacio: new Date().toISOString(), is_activ: data.is_activ !== undefined ? Boolean(data.is_activ) : true };
+      _recursos.unshift(newItem);
+      return { ok: true, data: deepClone(newItem) };
+    },
+    async deleteRecurs(id) {
+      await delay(300);
+      const idx = _recursos.findIndex((r) => r.id === Number(id));
+      if (idx === -1) return { ok: false, error: 'Recurs no trobat' };
+      _recursos.splice(idx, 1);
+      return { ok: true };
+    },
+    async getAutors() { await delay(); return { ok: true, data: deepClone(_autors) }; },
+    async getAutor(id) { await delay(); const item = _autors.find((a) => a.id === Number(id)); if (!item) return { ok: false, error: "Autor no trobat" }; return { ok: true, data: deepClone(item) }; },
+    async createAutor(data) {
+      await delay(500);
+      const errors = {};
+      if (!data.nom?.trim())    errors.nom     = "El nom és obligatori.";
+      if (!data.cognoms?.trim()) errors.cognoms = "Els cognoms són obligatoris.";
+      if (!data.email?.trim())  errors.email   = "El correu és obligatori.";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) errors.email = "El format del correu no és vàlid.";
+      else if (_autors.some((a) => a.email === data.email.trim())) errors.email = "Aquest correu ja existeix.";
+      if (Object.keys(errors).length) return { ok: false, errors };
+      const newItem = { id: _nextAutorId++, nom: data.nom.trim(), cognoms: data.cognoms.trim(), email: data.email.trim(), data_naixement: data.data_naixement || null, càrrec: data.càrrec?.trim() || null };
+      _autors.unshift(newItem);
+      return { ok: true, data: deepClone(newItem) };
+    },
+    async deleteAutor(id) {
+      await delay(300);
+      const idx = _autors.findIndex((a) => a.id === Number(id));
+      if (idx === -1) return { ok: false, error: 'Autor no trobat' };
+      _autors.splice(idx, 1);
+      return { ok: true };
+    },
+  };
+})();
+</script>
+<script>
+// ── Helpers ────────────────────────────────────────────────────
+const $ = (sel, ctx = document) => ctx.querySelector(sel);
+const catLabel = { TEC:'Tecnologia', EDU:'Educació', SAL:'Salut', ENT:'Entreteniment', ALT:'Altres' };
+const fmt = (iso) => new Date(iso).toLocaleDateString('ca-ES', { day:'2-digit', month:'short', year:'numeric' });
+const initials = (nom, cognoms) => (nom[0] + (cognoms[0] || '')).toUpperCase();
+
+function showToast(msg, type = 'success') {
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span class="toast-dot"></span>${msg}`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+// Returns a Promise that resolves true (confirm) or false (cancel)
+function showConfirm(title, body) {
+  return new Promise((resolve) => {
+    const backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop';
+    backdrop.innerHTML = `
+      <div class="modal">
+        <div class="modal-icon">🗑️</div>
+        <h3>${title}</h3>
+        <p>${body}</p>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="modal-cancel">Cancel·lar</button>
+          <button class="btn btn-danger" id="modal-confirm">Sí, eliminar</button>
+        </div>
+      </div>`;
+    document.body.appendChild(backdrop);
+    const cleanup = (result) => { backdrop.remove(); resolve(result); };
+    backdrop.querySelector('#modal-confirm').onclick = () => cleanup(true);
+    backdrop.querySelector('#modal-cancel').onclick  = () => cleanup(false);
+    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) cleanup(false); });
+  });
+}
+
+function renderTemplate(id) {
+  const tpl = document.getElementById(id);
+  return document.importNode(tpl.content, true);
+}
+
+// ── Router ─────────────────────────────────────────────────────
+const router = {
+  go(hash) { window.location.hash = hash; },
+  async handle() {
+    const hash = window.location.hash || '#/';
+    const nav = document.getElementById('nav');
+    nav.querySelectorAll('a').forEach(a => {
+      a.classList.toggle('active',
+        hash.startsWith('#/' + a.dataset.route));
+    });
+
+    const main = document.getElementById('main-content');
+
+    // HOME
+    if (hash === '#/' || hash === '') {
+      main.innerHTML = '';
+      main.appendChild(renderTemplate('tpl-home'));
+
+    // RECURS LIST
+    } else if (hash === '#/recursos') {
+      main.innerHTML = '';
+      main.appendChild(renderTemplate('tpl-recursos'));
+      const res = await MockAPI.getRecursos();
+      const cnt = document.getElementById('recursos-count');
+      const box = document.getElementById('recursos-list-content');
+      if (!res.ok) { box.innerHTML = `<p style="color:var(--accent)">${res.error}</p>`; return; }
+      const items = res.data;
+      cnt.textContent = `${items.length} recurs${items.length !== 1 ? 'os' : ''} trobat${items.length !== 1 ? 's' : ''}`;
+      if (!items.length) {
+        box.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><h3>Sense recursos</h3><p>Crea el primer recurs per començar.</p></div>`;
+        return;
+      }
+      const grid = document.createElement('div'); grid.className = 'grid';
+      items.forEach((r, i) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.animationDelay = `${i * 0.05}s`;
+        card.onclick = () => router.go(`#/recursos/${r.id}`);
+        card.innerHTML = `
+          <div class="card-top">
+            <span class="card-title">${r.titol}</span>
+            <span class="tag tag-${r.categoria}">${catLabel[r.categoria]}</span>
+          </div>
+          ${r.descripcio ? `<p class="card-desc">${r.descripcio}</p>` : ''}
+          <div class="card-meta">
+            <span class="status-dot ${r.is_activ ? 'activ' : 'inactiv'}"></span>
+            <span class="status-label">${r.is_activ ? 'Actiu' : 'Inactiu'}</span>
+            <span class="card-date">${fmt(r.data_publicacio)}</span>
+            <button class="card-delete-btn" data-id="${r.id}" title="Eliminar recurs">
+              <svg viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M5.5 3.5V2.5a.5.5 0 01.5-.5h2a.5.5 0 01.5.5v1M5 3.5l.5 8M9 3.5l-.5 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </button>
+          </div>`;
+        grid.appendChild(card);
+      });
+      box.innerHTML = '';
+      box.appendChild(grid);
+      grid.addEventListener('click', async (e) => {
+        const btn = e.target.closest('.card-delete-btn');
+        if (!btn) return;
+        e.stopPropagation();
+        const id = btn.dataset.id;
+        const card = btn.closest('.card');
+        const title = card.querySelector('.card-title').textContent;
+        const confirmed = await showConfirm('Eliminar recurs', `Segur que vols eliminar "<strong>${title}</strong>"? Aquesta acció no es pot desfer.`);
+        if (!confirmed) return;
+        const res = await MockAPI.deleteRecurs(id);
+        if (res.ok) {
+          card.style.transition = 'opacity .3s, transform .3s';
+          card.style.opacity = '0'; card.style.transform = 'scale(.97)';
+          setTimeout(() => { card.remove(); const rem = grid.querySelectorAll('.card').length; document.getElementById('recursos-count').textContent = `${rem} recurs${rem !== 1 ? 'os' : ''} trobat${rem !== 1 ? 's' : ''}`; }, 300);
+          showToast('Recurs eliminat.');
+        } else showToast(res.error, 'error');
+      });
+
+    // RECURS DETAIL
+    } else if (hash.match(/^#\/recursos\/(\d+)$/)) {
+      const id = hash.match(/^#\/recursos\/(\d+)$/)[1];
+      main.innerHTML = '';
+      main.appendChild(renderTemplate('tpl-recurs-detail'));
+      const res = await MockAPI.getRecurs(id);
+      const box = document.getElementById('recurs-detail-content');
+      if (!res.ok) { box.innerHTML = `<p style="color:var(--accent)">${res.error}</p>`; return; }
+      const r = res.data;
+      box.innerHTML = `
+        <div class="detail-card">
+          <p class="detail-eyebrow">Recurs #${r.id}</p>
+          <h1 class="detail-title">${r.titol}</h1>
+          <div class="detail-tags">
+            <span class="tag tag-${r.categoria}">${catLabel[r.categoria]}</span>
+            <span class="tag" style="background:${r.is_activ ? 'var(--active-bg)' : '#F0F0F0'};color:${r.is_activ ? 'var(--accent-2)' : 'var(--ink-faint)'}">
+              ${r.is_activ ? '● Actiu' : '○ Inactiu'}
+            </span>
+          </div>
+          <div class="divider"></div>
+          <p class="detail-body">${r.descripcio || '<em style="color:var(--ink-faint)">Sense descripció</em>'}</p>
+          <div class="meta-grid">
+            <div class="meta-item"><label>Data de publicació</label><span>${fmt(r.data_publicacio)}</span></div>
+            <div class="meta-item"><label>Identificador</label><span style="font-family:'DM Mono',monospace">#${r.id}</span></div>
+          </div>
+          <div class="divider"></div>
+          <button class="btn btn-danger" id="detail-delete-recurs">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M5.5 3.5V2.5a.5.5 0 01.5-.5h2a.5.5 0 01.5.5v1M5 3.5l.5 8M9 3.5l-.5 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Eliminar recurs
+          </button>
+        </div>`;
+      document.getElementById('detail-delete-recurs').onclick = async () => {
+        const confirmed = await showConfirm('Eliminar recurs', `Segur que vols eliminar "<strong>${r.titol}</strong>"? Aquesta acció no es pot desfer.`);
+        if (!confirmed) return;
+        const del = await MockAPI.deleteRecurs(r.id);
+        if (del.ok) { showToast('Recurs eliminat.'); router.go('#/recursos'); }
+        else showToast(del.error, 'error');
+      };
+
+    // RECURS FORM
+    } else if (hash === '#/recursos/nou') {
+      main.innerHTML = '';
+      main.appendChild(renderTemplate('tpl-recurs-form'));
+      document.getElementById('recurs-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('recurs-submit-btn');
+        btn.textContent = 'Desant…'; btn.disabled = true;
+        // Clear errors
+        ['titol','categoria'].forEach(k => document.getElementById(`err-${k}`).textContent = '');
+        const data = {
+          titol:      document.getElementById('r-titol').value,
+          descripcio: document.getElementById('r-descripcio').value,
+          categoria:  document.getElementById('r-categoria').value,
+          is_activ:   document.getElementById('r-activ').checked,
+        };
+        const res = await MockAPI.createRecurs(data);
+        if (!res.ok) {
+          Object.entries(res.errors).forEach(([k, v]) => {
+            const el = document.getElementById(`err-${k}`);
+            if (el) { el.textContent = v; document.getElementById(`r-${k}`)?.classList.add('error'); }
+          });
+          btn.textContent = 'Desar recurs'; btn.disabled = false;
+          return;
+        }
+        showToast('Recurs creat correctament!');
+        router.go('#/recursos');
+      });
+
+    // AUTOR LIST
+    } else if (hash === '#/autors') {
+      main.innerHTML = '';
+      main.appendChild(renderTemplate('tpl-autors'));
+      const res = await MockAPI.getAutors();
+      const cnt = document.getElementById('autors-count');
+      const box = document.getElementById('autors-list-content');
+      if (!res.ok) { box.innerHTML = `<p style="color:var(--accent)">${res.error}</p>`; return; }
+      const items = res.data;
+      cnt.textContent = `${items.length} autor${items.length !== 1 ? 's' : ''} trobat${items.length !== 1 ? 's' : ''}`;
+      if (!items.length) {
+        box.innerHTML = `<div class="empty"><div class="empty-icon">👤</div><h3>Sense autors</h3><p>Afegeix el primer autor per començar.</p></div>`;
+        return;
+      }
+      const grid = document.createElement('div');
+      grid.style.display = 'flex'; grid.style.flexDirection = 'column'; grid.style.gap = '.75rem';
+      items.forEach((a, i) => {
+        const card = document.createElement('div');
+        card.className = 'autor-card';
+        card.style.animationDelay = `${i * 0.05}s`;
+        card.onclick = () => router.go(`#/autors/${a.id}`);
+        card.innerHTML = `
+          <div class="avatar">${initials(a.nom, a.cognoms)}</div>
+          <div class="autor-info">
+            <div class="autor-name">${a.nom} ${a.cognoms}</div>
+            <div class="autor-sub">${a.càrrec || '—'}</div>
+            <div class="autor-email">${a.email}</div>
+          </div>
+          <button class="card-delete-btn" data-id="${a.id}" title="Eliminar autor">
+            <svg viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M5.5 3.5V2.5a.5.5 0 01.5-.5h2a.5.5 0 01.5.5v1M5 3.5l.5 8M9 3.5l-.5 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </button>`;
+        grid.appendChild(card);
+      });
+      box.innerHTML = '';
+      box.appendChild(grid);
+      grid.addEventListener('click', async (e) => {
+        const btn = e.target.closest('.card-delete-btn');
+        if (!btn) return;
+        e.stopPropagation();
+        const id = btn.dataset.id;
+        const card = btn.closest('.autor-card');
+        const name = card.querySelector('.autor-name').textContent;
+        const confirmed = await showConfirm('Eliminar autor', `Segur que vols eliminar "<strong>${name}</strong>"? Aquesta acció no es pot desfer.`);
+        if (!confirmed) return;
+        const res = await MockAPI.deleteAutor(id);
+        if (res.ok) {
+          card.style.transition = 'opacity .3s, transform .3s';
+          card.style.opacity = '0'; card.style.transform = 'translateX(10px)';
+          setTimeout(() => { card.remove(); const rem = grid.querySelectorAll('.autor-card').length; document.getElementById('autors-count').textContent = `${rem} autor${rem !== 1 ? 's' : ''} trobat${rem !== 1 ? 's' : ''}`; }, 300);
+          showToast('Autor eliminat.');
+        } else showToast(res.error, 'error');
+      });
+
+    // AUTOR DETAIL
+    } else if (hash.match(/^#\/autors\/(\d+)$/)) {
+      const id = hash.match(/^#\/autors\/(\d+)$/)[1];
+      main.innerHTML = '';
+      main.appendChild(renderTemplate('tpl-autor-detail'));
+      const res = await MockAPI.getAutor(id);
+      const box = document.getElementById('autor-detail-content');
+      if (!res.ok) { box.innerHTML = `<p style="color:var(--accent)">${res.error}</p>`; return; }
+      const a = res.data;
+      box.innerHTML = `
+        <div class="detail-card">
+          <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem">
+            <div class="avatar" style="width:72px;height:72px;font-size:1.5rem">${initials(a.nom, a.cognoms)}</div>
+            <div>
+              <p class="detail-eyebrow">Autor #${a.id}</p>
+              <h1 class="detail-title" style="font-size:1.7rem;margin-bottom:0">${a.nom} ${a.cognoms}</h1>
+              ${a.càrrec ? `<p style="font-size:.9rem;color:var(--ink-dim);margin-top:.25rem">${a.càrrec}</p>` : ''}
+            </div>
+          </div>
+          <div class="divider"></div>
+          <div class="meta-grid">
+            <div class="meta-item"><label>Correu electrònic</label>
+              <span style="font-family:'DM Mono',monospace;font-size:.82rem">${a.email}</span></div>
+            <div class="meta-item"><label>Data de naixement</label>
+              <span>${a.data_naixement ? fmt(a.data_naixement) : '—'}</span></div>
+            <div class="meta-item"><label>Càrrec</label><span>${a.càrrec || '—'}</span></div>
+            <div class="meta-item"><label>Identificador</label>
+              <span style="font-family:'DM Mono',monospace">#${a.id}</span></div>
+          </div>
+          <div class="divider"></div>
+          <button class="btn btn-danger" id="detail-delete-autor">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M5.5 3.5V2.5a.5.5 0 01.5-.5h2a.5.5 0 01.5.5v1M5 3.5l.5 8M9 3.5l-.5 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Eliminar autor
+          </button>
+        </div>`;
+      document.getElementById('detail-delete-autor').onclick = async () => {
+        const confirmed = await showConfirm('Eliminar autor', `Segur que vols eliminar "<strong>${a.nom} ${a.cognoms}</strong>"? Aquesta acció no es pot desfer.`);
+        if (!confirmed) return;
+        const del = await MockAPI.deleteAutor(a.id);
+        if (del.ok) { showToast('Autor eliminat.'); router.go('#/autors'); }
+        else showToast(del.error, 'error');
+      };
+
+    // AUTOR FORM
+    } else if (hash === '#/autors/nou') {
+      main.innerHTML = '';
+      main.appendChild(renderTemplate('tpl-autor-form'));
+      document.getElementById('autor-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('autor-submit-btn');
+        btn.textContent = 'Desant…'; btn.disabled = true;
+        ['nom','cognoms','email'].forEach(k => document.getElementById(`err-${k}`).textContent = '');
+        const data = {
+          nom:            document.getElementById('a-nom').value,
+          cognoms:        document.getElementById('a-cognoms').value,
+          email:          document.getElementById('a-email').value,
+          data_naixement: document.getElementById('a-data').value || null,
+          càrrec:         document.getElementById('a-carrec').value,
+        };
+        const res = await MockAPI.createAutor(data);
+        if (!res.ok) {
+          Object.entries(res.errors).forEach(([k, v]) => {
+            const el = document.getElementById(`err-${k}`);
+            if (el) { el.textContent = v; document.getElementById(`a-${k}`)?.classList.add('error'); }
+          });
+          btn.textContent = 'Desar autor'; btn.disabled = false;
+          return;
+        }
+        showToast('Autor creat correctament!');
+        router.go('#/autors');
+      });
+
+    // 404
+    } else {
+      main.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div>
+        <h3>Pàgina no trobada</h3><p>Torna a l'<a href="#/" style="color:var(--accent)">inici</a>.</p></div>`;
+    }
+  }
+};
+
+window.addEventListener('hashchange', () => router.handle());
+router.handle();
+</script>
+</body>
+</html>
