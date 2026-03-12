@@ -1,80 +1,90 @@
 /**
- * MOCK API — Temporary fake REST API for development
- * Replace calls to `MockAPI.*` with real fetch() calls to your Django endpoints.
+ * API — Real fetch-based client for Django REST endpoints.
  *
- * Simulated endpoints:
- *   GET    /api/recursos/          → MockAPI.getRecursos()
- *   GET    /api/recursos/:id/      → MockAPI.getRecurs(id)
- *   POST   /api/recursos/          → MockAPI.createRecurs(data)
- *   GET    /api/autors/            → MockAPI.getAutors()
- *   GET    /api/autors/:id/        → MockAPI.getAutor(id)
- *   POST   /api/autors/            → MockAPI.createAutor(data)
+ * Endpoints expected on the Django side:
+ *   GET    /api/recursos/        → list all Recurs
+ *   GET    /api/recursos/:id/    → retrieve one Recurs
+ *   POST   /api/recursos/        → create a Recurs   (JSON body)
+ *   DELETE /api/recursos/:id/    → delete a Recurs
+ *   GET    /api/autors/          → list all Autor
+ *   GET    /api/autors/:id/      → retrieve one Autor
+ *   POST   /api/autors/          → create an Autor   (JSON body)
+ *   DELETE /api/autors/:id/      → delete an Autor
+ *
+ * Response shape (same as the old MockAPI so the router needs no changes):
+ *   Success  → { ok: true,  data: <object|array> }
+ *   Error    → { ok: false, error: <string>, errors: <object> }
  */
-const MockAPI = (() => {
-  let _recursos = [
-    { id: 1, titol: "Introducció a la Intel·ligència Artificial", descripcio: "Una guia completa per entendre els fonaments de la IA, incloent aprenentatge automàtic, xarxes neuronals i aplicacions pràctiques en l'educació i la indústria.", categoria: "TEC", data_publicacio: "2024-03-15T09:00:00Z", is_activ: true },
-    { id: 2, titol: "Metodologies d'Aprenentatge Actiu", descripcio: "Recull de tècniques pedagògiques per fomentar la participació activa de l'alumnat a l'aula, amb exemples pràctics i avaluació de resultats.", categoria: "EDU", data_publicacio: "2024-01-20T10:30:00Z", is_activ: true },
-    { id: 3, titol: "Benestar Mental en l'Entorn Acadèmic", descripcio: "Estratègies i recursos per promoure la salut mental dels estudiants i docents, amb enfocament en la gestió de l'estrès i la resiliència.", categoria: "SAL", data_publicacio: "2023-11-05T14:00:00Z", is_activ: true },
-    { id: 4, titol: "Cinema Documental Europeu Contemporani", descripcio: "Anàlisi de les tendències actuals en el documental europeu, amb fitxes de les obres més destacades dels últims cinc anys.", categoria: "ENT", data_publicacio: "2024-02-28T16:45:00Z", is_activ: false },
-    { id: 5, titol: "Accés Obert i Publicació Científica", descripcio: "Tot el que necessites saber sobre les polítiques d'accés obert, repositoris institucionals i com publicar en revistes d'impacte.", categoria: "ALT", data_publicacio: "2024-04-01T08:00:00Z", is_activ: true },
-  ];
-  let _autors = [
-    { id: 1, nom: "Marta",  cognoms: "Puigdomènech Roca",   email: "m.puigdomenech@universitat.cat", data_naixement: "1982-07-14", càrrec: "Professora Titular" },
-    { id: 2, nom: "Jordi",  cognoms: "Esquerra Viladomat",  email: "j.esquerra@recerca.cat",         data_naixement: "1975-02-28", càrrec: "Investigador Principal" },
-    { id: 3, nom: "Núria",  cognoms: "Fontanals Bosch",     email: "n.fontanals@educacio.org",       data_naixement: "1990-11-03", càrrec: "Coordinadora de Projectes" },
-    { id: 4, nom: "Pau",    cognoms: "Castells Montserrat", email: "p.castells@tech.cat",            data_naixement: "1988-05-19", càrrec: "Enginyer de Recerca" },
-  ];
-  let _nextRecursId = 6;
-  let _nextAutorId  = 5;
-  const delay     = (ms = 300) => new Promise((r) => setTimeout(r, ms));
-  const deepClone = (obj) => JSON.parse(JSON.stringify(obj));
-  return {
-    async getRecursos() { await delay(); return { ok: true, data: deepClone(_recursos) }; },
-    async getRecurs(id) { await delay(); const item = _recursos.find((r) => r.id === Number(id)); if (!item) return { ok: false, error: "Recurs no trobat" }; return { ok: true, data: deepClone(item) }; },
-    async createRecurs(data) {
-      await delay(500);
-      const errors = {};
-      if (!data.titol?.trim())  errors.titol     = "El títol és obligatori.";
-      if (!data.categoria)      errors.categoria = "La categoria és obligatoria.";
-      if (Object.keys(errors).length) return { ok: false, errors };
-      const newItem = { id: _nextRecursId++, titol: data.titol.trim(), descripcio: data.descripcio?.trim() || null, categoria: data.categoria, data_publicacio: new Date().toISOString(), is_activ: data.is_activ !== undefined ? Boolean(data.is_activ) : true };
-      _recursos.unshift(newItem);
-      return { ok: true, data: deepClone(newItem) };
-    },
-    async deleteRecurs(id) {
-      await delay(300);
-      const idx = _recursos.findIndex((r) => r.id === Number(id));
-      if (idx === -1) return { ok: false, error: 'Recurs no trobat' };
-      _recursos.splice(idx, 1);
-      return { ok: true };
-    },
-    async getAutors() { await delay(); return { ok: true, data: deepClone(_autors) }; },
-    async getAutor(id) { await delay(); const item = _autors.find((a) => a.id === Number(id)); if (!item) return { ok: false, error: "Autor no trobat" }; return { ok: true, data: deepClone(item) }; },
-    async createAutor(data) {
-      await delay(500);
-      const errors = {};
-      if (!data.nom?.trim())    errors.nom     = "El nom és obligatori.";
-      if (!data.cognoms?.trim()) errors.cognoms = "Els cognoms són obligatoris.";
-      if (!data.email?.trim())  errors.email   = "El correu és obligatori.";
-      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) errors.email = "El format del correu no és vàlid.";
-      else if (_autors.some((a) => a.email === data.email.trim())) errors.email = "Aquest correu ja existeix.";
-      if (Object.keys(errors).length) return { ok: false, errors };
-      const newItem = { id: _nextAutorId++, nom: data.nom.trim(), cognoms: data.cognoms.trim(), email: data.email.trim(), data_naixement: data.data_naixement || null, càrrec: data.càrrec?.trim() || null };
-      _autors.unshift(newItem);
-      return { ok: true, data: deepClone(newItem) };
-    },
-    async deleteAutor(id) {
-      await delay(300);
-      const idx = _autors.findIndex((a) => a.id === Number(id));
-      if (idx === -1) return { ok: false, error: 'Autor no trobat' };
-      _autors.splice(idx, 1);
-      return { ok: true };
-    },
-  };
-})();
 
-// ── Helpers ────────────────────────────────────────────────────
-const $ = (sel, ctx = document) => ctx.querySelector(sel);
+// ── CSRF helper (required by Django for POST / DELETE) ──────────
+function getCsrfToken() {
+  const match = document.cookie.match(/csrftoken=([^;]+)/);
+  return match ? match[1] : '';
+}
+
+// ── Base fetch wrapper ──────────────────────────────────────────
+async function apiFetch(url, options = {}) {
+  const isReadOnly = !options.method || options.method === 'GET';
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'Accept':       'application/json',
+    ...(isReadOnly ? {} : { 'X-CSRFToken': getCsrfToken() }),
+    ...(options.headers || {}),
+  };
+
+  try {
+    const response = await fetch(url, { ...options, headers });
+
+    // 204 No Content (typical for DELETE success) — no body to parse
+    if (response.status === 204) {
+      return { ok: true };
+    }
+
+    const json = await response.json();
+
+    if (!response.ok) {
+      // Django REST Framework returns field errors as { field: ["msg", ...] }
+      // and non-field errors as { detail: "msg" } or { non_field_errors: [...] }
+      if (typeof json === 'object' && !json.detail && !json.non_field_errors) {
+        // Field-level validation errors — normalise to { field: "first message" }
+        const errors = {};
+        for (const [key, val] of Object.entries(json)) {
+          errors[key] = Array.isArray(val) ? val[0] : val;
+        }
+        return { ok: false, errors };
+      }
+      const msg = json.detail || (Array.isArray(json.non_field_errors) ? json.non_field_errors[0] : 'Error desconegut');
+      return { ok: false, error: msg };
+    }
+
+    return { ok: true, data: json };
+
+  } catch (err) {
+    // Network failure or JSON parse error
+    console.error('API error:', err);
+    return { ok: false, error: 'No s\'ha pogut connectar amb el servidor.' };
+  }
+}
+
+const BASE_URL = 'http://192.168.18.238:8000';
+
+// ── Public API object (same interface as old MockAPI) ───────────
+const API = {
+  // RECURSOS
+  getRecursos()       { return apiFetch(`${BASE_URL}/api/recursos/`); },
+  getRecurs(id)       { return apiFetch(`${BASE_URL}/api/recursos/${id}/`); },
+  createRecurs(data)  { return apiFetch(`${BASE_URL}/api/recursos/`,  { method: 'POST',   body: JSON.stringify(data) }); },
+  deleteRecurs(id)    { return apiFetch(`${BASE_URL}/api/recursos/${id}/`, { method: 'DELETE' }); },
+
+  // AUTORS
+  getAutors()         { return apiFetch(`${BASE_URL}/api/autors/`); },
+  getAutor(id)        { return apiFetch(`${BASE_URL}/api/autors/${id}/`); },
+  createAutor(data)   { return apiFetch(`${BASE_URL}/api/autors/`,   { method: 'POST',   body: JSON.stringify(data) }); },
+  deleteAutor(id)     { return apiFetch(`${BASE_URL}/api/autors/${id}/`,  { method: 'DELETE' }); },
+};
+
+// ── Helpers ─────────────────────────────────────────────────────
 const catLabel = { TEC:'Tecnologia', EDU:'Educació', SAL:'Salut', ENT:'Entreteniment', ALT:'Altres' };
 const fmt = (iso) => new Date(iso).toLocaleDateString('ca-ES', { day:'2-digit', month:'short', year:'numeric' });
 const initials = (nom, cognoms) => (nom[0] + (cognoms[0] || '')).toUpperCase();
@@ -87,7 +97,6 @@ function showToast(msg, type = 'success') {
   setTimeout(() => t.remove(), 3500);
 }
 
-// Returns a Promise that resolves true (confirm) or false (cancel)
 function showConfirm(title, body) {
   return new Promise((resolve) => {
     const backdrop = document.createElement('div');
@@ -115,15 +124,14 @@ function renderTemplate(id) {
   return document.importNode(tpl.content, true);
 }
 
-// ── Router ─────────────────────────────────────────────────────
+// ── Router ──────────────────────────────────────────────────────
 const router = {
   go(hash) { window.location.hash = hash; },
   async handle() {
     const hash = window.location.hash || '#/';
     const nav = document.getElementById('nav');
     nav.querySelectorAll('a').forEach(a => {
-      a.classList.toggle('active',
-        hash.startsWith('#/' + a.dataset.route));
+      a.classList.toggle('active', hash.startsWith('#/' + a.dataset.route));
     });
 
     const main = document.getElementById('main-content');
@@ -137,7 +145,7 @@ const router = {
     } else if (hash === '#/recursos') {
       main.innerHTML = '';
       main.appendChild(renderTemplate('tpl-recursos'));
-      const res = await MockAPI.getRecursos();
+      const res = await API.getRecursos();
       const cnt = document.getElementById('recursos-count');
       const box = document.getElementById('recursos-list-content');
       if (!res.ok) { box.innerHTML = `<p style="color:var(--accent)">${res.error}</p>`; return; }
@@ -180,11 +188,15 @@ const router = {
         const title = card.querySelector('.card-title').textContent;
         const confirmed = await showConfirm('Eliminar recurs', `Segur que vols eliminar "<strong>${title}</strong>"? Aquesta acció no es pot desfer.`);
         if (!confirmed) return;
-        const res = await MockAPI.deleteRecurs(id);
+        const res = await API.deleteRecurs(id);
         if (res.ok) {
           card.style.transition = 'opacity .3s, transform .3s';
           card.style.opacity = '0'; card.style.transform = 'scale(.97)';
-          setTimeout(() => { card.remove(); const rem = grid.querySelectorAll('.card').length; document.getElementById('recursos-count').textContent = `${rem} recurs${rem !== 1 ? 'os' : ''} trobat${rem !== 1 ? 's' : ''}`; }, 300);
+          setTimeout(() => {
+            card.remove();
+            const rem = grid.querySelectorAll('.card').length;
+            document.getElementById('recursos-count').textContent = `${rem} recurs${rem !== 1 ? 'os' : ''} trobat${rem !== 1 ? 's' : ''}`;
+          }, 300);
           showToast('Recurs eliminat.');
         } else showToast(res.error, 'error');
       });
@@ -194,7 +206,7 @@ const router = {
       const id = hash.match(/^#\/recursos\/(\d+)$/)[1];
       main.innerHTML = '';
       main.appendChild(renderTemplate('tpl-recurs-detail'));
-      const res = await MockAPI.getRecurs(id);
+      const res = await API.getRecurs(id);
       const box = document.getElementById('recurs-detail-content');
       if (!res.ok) { box.innerHTML = `<p style="color:var(--accent)">${res.error}</p>`; return; }
       const r = res.data;
@@ -223,7 +235,7 @@ const router = {
       document.getElementById('detail-delete-recurs').onclick = async () => {
         const confirmed = await showConfirm('Eliminar recurs', `Segur que vols eliminar "<strong>${r.titol}</strong>"? Aquesta acció no es pot desfer.`);
         if (!confirmed) return;
-        const del = await MockAPI.deleteRecurs(r.id);
+        const del = await API.deleteRecurs(r.id);
         if (del.ok) { showToast('Recurs eliminat.'); router.go('#/recursos'); }
         else showToast(del.error, 'error');
       };
@@ -236,7 +248,6 @@ const router = {
         e.preventDefault();
         const btn = document.getElementById('recurs-submit-btn');
         btn.textContent = 'Desant…'; btn.disabled = true;
-        // Clear errors
         ['titol','categoria'].forEach(k => document.getElementById(`err-${k}`).textContent = '');
         const data = {
           titol:      document.getElementById('r-titol').value,
@@ -244,12 +255,16 @@ const router = {
           categoria:  document.getElementById('r-categoria').value,
           is_activ:   document.getElementById('r-activ').checked,
         };
-        const res = await MockAPI.createRecurs(data);
+        const res = await API.createRecurs(data);
         if (!res.ok) {
-          Object.entries(res.errors).forEach(([k, v]) => {
-            const el = document.getElementById(`err-${k}`);
-            if (el) { el.textContent = v; document.getElementById(`r-${k}`)?.classList.add('error'); }
-          });
+          if (res.errors) {
+            Object.entries(res.errors).forEach(([k, v]) => {
+              const el = document.getElementById(`err-${k}`);
+              if (el) { el.textContent = v; document.getElementById(`r-${k}`)?.classList.add('error'); }
+            });
+          } else {
+            showToast(res.error, 'error');
+          }
           btn.textContent = 'Desar recurs'; btn.disabled = false;
           return;
         }
@@ -261,7 +276,7 @@ const router = {
     } else if (hash === '#/autors') {
       main.innerHTML = '';
       main.appendChild(renderTemplate('tpl-autors'));
-      const res = await MockAPI.getAutors();
+      const res = await API.getAutors();
       const cnt = document.getElementById('autors-count');
       const box = document.getElementById('autors-list-content');
       if (!res.ok) { box.innerHTML = `<p style="color:var(--accent)">${res.error}</p>`; return; }
@@ -301,11 +316,15 @@ const router = {
         const name = card.querySelector('.autor-name').textContent;
         const confirmed = await showConfirm('Eliminar autor', `Segur que vols eliminar "<strong>${name}</strong>"? Aquesta acció no es pot desfer.`);
         if (!confirmed) return;
-        const res = await MockAPI.deleteAutor(id);
+        const res = await API.deleteAutor(id);
         if (res.ok) {
           card.style.transition = 'opacity .3s, transform .3s';
           card.style.opacity = '0'; card.style.transform = 'translateX(10px)';
-          setTimeout(() => { card.remove(); const rem = grid.querySelectorAll('.autor-card').length; document.getElementById('autors-count').textContent = `${rem} autor${rem !== 1 ? 's' : ''} trobat${rem !== 1 ? 's' : ''}`; }, 300);
+          setTimeout(() => {
+            card.remove();
+            const rem = grid.querySelectorAll('.autor-card').length;
+            document.getElementById('autors-count').textContent = `${rem} autor${rem !== 1 ? 's' : ''} trobat${rem !== 1 ? 's' : ''}`;
+          }, 300);
           showToast('Autor eliminat.');
         } else showToast(res.error, 'error');
       });
@@ -315,7 +334,7 @@ const router = {
       const id = hash.match(/^#\/autors\/(\d+)$/)[1];
       main.innerHTML = '';
       main.appendChild(renderTemplate('tpl-autor-detail'));
-      const res = await MockAPI.getAutor(id);
+      const res = await API.getAutor(id);
       const box = document.getElementById('autor-detail-content');
       if (!res.ok) { box.innerHTML = `<p style="color:var(--accent)">${res.error}</p>`; return; }
       const a = res.data;
@@ -348,7 +367,7 @@ const router = {
       document.getElementById('detail-delete-autor').onclick = async () => {
         const confirmed = await showConfirm('Eliminar autor', `Segur que vols eliminar "<strong>${a.nom} ${a.cognoms}</strong>"? Aquesta acció no es pot desfer.`);
         if (!confirmed) return;
-        const del = await MockAPI.deleteAutor(a.id);
+        const del = await API.deleteAutor(a.id);
         if (del.ok) { showToast('Autor eliminat.'); router.go('#/autors'); }
         else showToast(del.error, 'error');
       };
@@ -369,12 +388,16 @@ const router = {
           data_naixement: document.getElementById('a-data').value || null,
           càrrec:         document.getElementById('a-carrec').value,
         };
-        const res = await MockAPI.createAutor(data);
+        const res = await API.createAutor(data);
         if (!res.ok) {
-          Object.entries(res.errors).forEach(([k, v]) => {
-            const el = document.getElementById(`err-${k}`);
-            if (el) { el.textContent = v; document.getElementById(`a-${k}`)?.classList.add('error'); }
-          });
+          if (res.errors) {
+            Object.entries(res.errors).forEach(([k, v]) => {
+              const el = document.getElementById(`err-${k}`);
+              if (el) { el.textContent = v; document.getElementById(`a-${k}`)?.classList.add('error'); }
+            });
+          } else {
+            showToast(res.error, 'error');
+          }
           btn.textContent = 'Desar autor'; btn.disabled = false;
           return;
         }
