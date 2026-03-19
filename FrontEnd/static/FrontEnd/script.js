@@ -1,73 +1,108 @@
 /**
- * API — Real fetch-based client for Django REST endpoints.
+ * API — Fetch-based client with JWT authentication.
  *
- * Endpoints expected on the Django side:
- *   GET    /api/recursos/        → list all Recurs
- *   GET    /api/recursos/:id/    → retrieve one Recurs
- *   POST   /api/recursos/        → create a Recurs   (JSON body)
- *   DELETE /api/recursos/:id/    → delete a Recurs
- *   GET    /api/autors/          → list all Autor
- *   GET    /api/autors/:id/      → retrieve one Autor
- *   POST   /api/autors/          → create an Autor   (JSON body)
- *   DELETE /api/autors/:id/      → delete an Autor
+ * Flow:
+ *   1. On load, check localStorage for a saved token.
+ *   2. If no token → show login screen.
+ *   3. User submits username + password → POST /api/token/ → store token.
+ *   4. Every subsequent request sends:  Authorization: Bearer <token>
+ *   5. If any request gets a 401 → clear token and redirect to login.
  *
- * Response shape (same as the old MockAPI so the router needs no changes):
- *   Success  → { ok: true,  data: <object|array> }
- *   Error    → { ok: false, error: <string>, errors: <object> }
+ * To use a different token endpoint, change TOKEN_URL below.
  */
 
-// ── CSRF helper (required by Django for POST / DELETE) ──────────
-function getCsrfToken() {
-  const match = document.cookie.match(/csrftoken=([^;]+)/);
-  return match ? match[1] : '';
-}
+const TOKEN_URL = 'http://192.168.19.57:8080/api/token/';   // ← change if your login endpoint differs
 
-// ── Base fetch wrapper ──────────────────────────────────────────
+// ── Auth helpers ─────────────────────────────────────────────────
+const Auth = {
+  getToken()        { return localStorage.getItem('access_token'); },
+  setToken(token)   { localStorage.setItem('access_token', token); },
+  clearToken()      { localStorage.removeItem('access_token'); },
+  isLoggedIn()      { return !!localStorage.getItem('access_token'); },
+
+  async login(username, password) {
+    try {
+      const res = await fetch(TOKEN_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ username, password }),
+      });
+      const json = await res.json();
+
+      if (!res.ok) {
+        const msg = json.detail
+          || (json.non_field_errors && json.non_field_errors[0])
+          || 'Credencials incorrectes.';
+        return { ok: false, error: msg };
+      }
+
+      // simple-jwt  → { access: "...", refresh: "..." }
+      // authtoken   → { token: "..." }
+      const token = json.access || json.token;
+      if (!token) return { ok: false, error: 'La resposta del servidor no conté cap token.' };
+
+      Auth.setToken(token);
+      return { ok: true };
+
+    } catch {
+      return { ok: false, error: "No s'ha pogut connectar amb el servidor." };
+    }
+  },
+
+  logout() {
+    Auth.clearToken();
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) logoutBtn.remove();
+    showLoginScreen();
+  },
+};
+
+// ── Base fetch wrapper ────────────────────────────────────────────
 async function apiFetch(url, options = {}) {
-  const isReadOnly = !options.method || options.method === 'GET';
-
   const headers = {
     'Content-Type': 'application/json',
     'Accept':       'application/json',
-    ...(isReadOnly ? {} : { 'X-CSRFToken': getCsrfToken() }),
+    'Authorization': `Bearer ${Auth.getToken()}`,
     ...(options.headers || {}),
   };
 
   try {
     const response = await fetch(url, { ...options, headers });
 
-    // 204 No Content (typical for DELETE success) — no body to parse
-    if (response.status === 204) {
-      return { ok: true };
+    // Token expired or invalid → kick back to login
+    if (response.status === 401) {
+      Auth.clearToken();
+      showLoginScreen('La sessió ha caducat. Torna a iniciar sessió.');
+      return { ok: false, error: 'No autenticat.' };
     }
+
+    // 204 No Content (DELETE success) — no body
+    if (response.status === 204) return { ok: true };
 
     const json = await response.json();
 
     if (!response.ok) {
-      // Django REST Framework returns field errors as { field: ["msg", ...] }
-      // and non-field errors as { detail: "msg" } or { non_field_errors: [...] }
       if (typeof json === 'object' && !json.detail && !json.non_field_errors) {
-        // Field-level validation errors — normalise to { field: "first message" }
         const errors = {};
         for (const [key, val] of Object.entries(json)) {
           errors[key] = Array.isArray(val) ? val[0] : val;
         }
         return { ok: false, errors };
       }
-      const msg = json.detail || (Array.isArray(json.non_field_errors) ? json.non_field_errors[0] : 'Error desconegut');
+      const msg = json.detail
+        || (Array.isArray(json.non_field_errors) ? json.non_field_errors[0] : 'Error desconegut');
       return { ok: false, error: msg };
     }
 
-    return { ok: true, data: json };
+    return { ok: true, data: Array.isArray(json) ? json : (json.results ?? json) };
 
   } catch (err) {
-    // Network failure or JSON parse error
     console.error('API error:', err);
-    return { ok: false, error: 'No s\'ha pogut connectar amb el servidor.' };
+    return { ok: false, error: "No s'ha pogut connectar amb el servidor." };
   }
 }
 
-const BASE_URL = 'http://192.168.17.137:8080';
+const BASE_URL = 'http://192.168.19.57:8080';
 
 // ── Public API object (same interface as old MockAPI) ───────────
 
@@ -81,11 +116,88 @@ const API = {
   // AUTORS
   getAutors()         { return apiFetch(`${BASE_URL}/autor/`); },
   getAutor(id)        { return apiFetch(`${BASE_URL}/autor/${id}/`); },
-  createAutor(data)   { return apiFetch(`${BASE_URL}/api/autors/`,   { method: 'POST',   body: JSON.stringify(data) }); },
-  deleteAutor(id)     { return apiFetch(`${BASE_URL}/api/autors/${id}/`,  { method: 'DELETE' }); },
+  createAutor(data)   { return apiFetch(`${BASE_URL}/autor/`,   { method: 'POST',   body: JSON.stringify(data) }); },
+  deleteAutor(id)     { return apiFetch(`${BASE_URL}/autor/${id}/`,  { method: 'DELETE' }); },
 };
 
-// ── Helpers ─────────────────────────────────────────────────────
+
+// ── Login screen ──────────────────────────────────────────────────
+function showLoginScreen(errorMsg = '') {
+  document.getElementById('app').style.display = 'none';
+
+  let overlay = document.getElementById('login-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'login-overlay';
+    document.body.appendChild(overlay);
+  }
+
+  overlay.style.display = 'flex';
+  overlay.innerHTML = `
+    <div class="login-card">
+      <div class="login-logo">Gestió de <span>Recursos</span></div>
+      <p class="login-subtitle">Inicia sessió per continuar</p>
+      ${errorMsg ? `<div class="login-error">${errorMsg}</div>` : ''}
+      <form id="login-form">
+        <div class="field">
+          <label for="login-user">Usuari</label>
+          <input id="login-user" class="field-input" type="text" placeholder="nom d'usuari" autocomplete="username" required />
+        </div>
+        <div class="field">
+          <label for="login-pass">Contrasenya</label>
+          <input id="login-pass" class="field-input" type="password" placeholder="••••••••" autocomplete="current-password" required />
+        </div>
+        <div class="field-error" id="login-err"></div>
+        <button type="submit" class="btn btn-primary" id="login-btn" style="width:100%;justify-content:center;margin-top:.5rem">
+          Iniciar sessió
+        </button>
+      </form>
+    </div>`;
+
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn      = document.getElementById('login-btn');
+    const errEl    = document.getElementById('login-err');
+    const username = document.getElementById('login-user').value.trim();
+    const password = document.getElementById('login-pass').value;
+
+    btn.textContent   = 'Entrant…';
+    btn.disabled      = true;
+    errEl.textContent = '';
+
+    const res = await Auth.login(username, password);
+
+    if (!res.ok) {
+      errEl.textContent = res.error;
+      btn.textContent   = 'Iniciar sessió';
+      btn.disabled      = false;
+      return;
+    }
+
+    overlay.style.display = 'none';
+    document.getElementById('app').style.display = '';
+    addLogoutButton();
+    router.handle();
+  });
+}
+
+// ── Logout button ─────────────────────────────────────────────────
+function addLogoutButton() {
+  if (document.getElementById('logout-btn')) return;
+  const btn = document.createElement('button');
+  btn.id        = 'logout-btn';
+  btn.className = 'logout-btn';
+  btn.title     = 'Tancar sessió';
+  btn.innerHTML = `
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+      <path d="M6 2H3a1 1 0 00-1 1v9a1 1 0 001 1h3M10 10l3-3-3-3M13 7H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Sortir`;
+  btn.onclick = () => Auth.logout();
+  document.getElementById('nav').appendChild(btn);
+}
+
+// ── Helpers ───────────────────────────────────────────────────────
 const catLabel = { TEC:'Tecnologia', EDU:'Educació', SAL:'Salut', ENT:'Entreteniment', ALT:'Altres' };
 const fmt = (iso) => new Date(iso).toLocaleDateString('ca-ES', { day:'2-digit', month:'short', year:'numeric' });
 const initials = (nom, cognoms) => (nom[0] + (cognoms[0] || '')).toUpperCase();
@@ -125,24 +237,22 @@ function renderTemplate(id) {
   return document.importNode(tpl.content, true);
 }
 
-// ── Router ──────────────────────────────────────────────────────
+// ── Router ────────────────────────────────────────────────────────
 const router = {
   go(hash) { window.location.hash = hash; },
   async handle() {
     const hash = window.location.hash || '#/';
-    const nav = document.getElementById('nav');
+    const nav  = document.getElementById('nav');
     nav.querySelectorAll('a').forEach(a => {
       a.classList.toggle('active', hash.startsWith('#/' + a.dataset.route));
     });
 
     const main = document.getElementById('main-content');
 
-    // HOME
     if (hash === '#/' || hash === '') {
       main.innerHTML = '';
       main.appendChild(renderTemplate('tpl-home'));
 
-    // RECURS LIST
     } else if (hash === '#/recursos') {
       main.innerHTML = '';
       main.appendChild(renderTemplate('tpl-recursos'));
@@ -184,8 +294,8 @@ const router = {
         const btn = e.target.closest('.card-delete-btn');
         if (!btn) return;
         e.stopPropagation();
-        const id = btn.dataset.id;
-        const card = btn.closest('.card');
+        const id    = btn.dataset.id;
+        const card  = btn.closest('.card');
         const title = card.querySelector('.card-title').textContent;
         const confirmed = await showConfirm('Eliminar recurs', `Segur que vols eliminar "<strong>${title}</strong>"? Aquesta acció no es pot desfer.`);
         if (!confirmed) return;
@@ -202,7 +312,6 @@ const router = {
         } else showToast(res.error, 'error');
       });
 
-    // RECURS DETAIL
     } else if (hash.match(/^#\/recursos\/(\d+)$/)) {
       const id = hash.match(/^#\/recursos\/(\d+)$/)[1];
       main.innerHTML = '';
@@ -241,7 +350,6 @@ const router = {
         else showToast(del.error, 'error');
       };
 
-    // RECURS FORM
     } else if (hash === '#/recursos/nou') {
       main.innerHTML = '';
       main.appendChild(renderTemplate('tpl-recurs-form'));
@@ -263,9 +371,7 @@ const router = {
               const el = document.getElementById(`err-${k}`);
               if (el) { el.textContent = v; document.getElementById(`r-${k}`)?.classList.add('error'); }
             });
-          } else {
-            showToast(res.error, 'error');
-          }
+          } else { showToast(res.error, 'error'); }
           btn.textContent = 'Desar recurs'; btn.disabled = false;
           return;
         }
@@ -273,7 +379,6 @@ const router = {
         router.go('#/recursos');
       });
 
-    // AUTOR LIST
     } else if (hash === '#/autors') {
       main.innerHTML = '';
       main.appendChild(renderTemplate('tpl-autors'));
@@ -312,7 +417,7 @@ const router = {
         const btn = e.target.closest('.card-delete-btn');
         if (!btn) return;
         e.stopPropagation();
-        const id = btn.dataset.id;
+        const id   = btn.dataset.id;
         const card = btn.closest('.autor-card');
         const name = card.querySelector('.autor-name').textContent;
         const confirmed = await showConfirm('Eliminar autor', `Segur que vols eliminar "<strong>${name}</strong>"? Aquesta acció no es pot desfer.`);
@@ -330,7 +435,6 @@ const router = {
         } else showToast(res.error, 'error');
       });
 
-    // AUTOR DETAIL
     } else if (hash.match(/^#\/autors\/(\d+)$/)) {
       const id = hash.match(/^#\/autors\/(\d+)$/)[1];
       main.innerHTML = '';
@@ -373,7 +477,6 @@ const router = {
         else showToast(del.error, 'error');
       };
 
-    // AUTOR FORM
     } else if (hash === '#/autors/nou') {
       main.innerHTML = '';
       main.appendChild(renderTemplate('tpl-autor-form'));
@@ -396,9 +499,7 @@ const router = {
               const el = document.getElementById(`err-${k}`);
               if (el) { el.textContent = v; document.getElementById(`a-${k}`)?.classList.add('error'); }
             });
-          } else {
-            showToast(res.error, 'error');
-          }
+          } else { showToast(res.error, 'error'); }
           btn.textContent = 'Desar autor'; btn.disabled = false;
           return;
         }
@@ -406,7 +507,6 @@ const router = {
         router.go('#/autors');
       });
 
-    // 404
     } else {
       main.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div>
         <h3>Pàgina no trobada</h3><p>Torna a l'<a href="#/" style="color:var(--accent)">inici</a>.</p></div>`;
@@ -414,5 +514,12 @@ const router = {
   }
 };
 
+// ── Boot ──────────────────────────────────────────────────────────
 window.addEventListener('hashchange', () => router.handle());
-router.handle();
+
+if (Auth.isLoggedIn()) {
+  addLogoutButton();
+  router.handle();
+} else {
+  showLoginScreen();
+}
